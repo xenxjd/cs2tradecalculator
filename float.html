@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CS2 Skin Profit Calculator</title>
+  <title>CS2 Skin Balance Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
   </style>
 </head>
 <body>
-  <h1>CS2 Skin Profit Calculator</h1>
+  <h1>CS2 Skin Balance Calculator</h1>
   
   <label>Buy Price:</label>
   <input type="number" id="buyPrice" placeholder="e.g., 10">
@@ -70,12 +70,12 @@
     <option value="¥">CNY (¥)</option>
   </select>
 
-  <button onclick="calculateProfit()">Check Profit</button>
+  <button onclick="calculateBalance()">Check Balance</button>
 
   <div class="result" id="result"></div>
 
   <script>
-    function calculateProfit() {
+    function calculateBalance() {
       const buy = parseFloat(document.getElementById('buyPrice').value);
       const sell = parseFloat(document.getElementById('sellPrice').value);
       const type = document.getElementById('transactionType').value;
@@ -86,30 +86,25 @@
         return;
       }
 
-      let netSell = 0;
+      let netBalance = 0;
+      let balancePercent = 0;
+      let label = '';
 
       if (type === 'floatToSteam') {
         const steamFee = 0.13; // 13%
-        netSell = sell * (1 - steamFee);
+        netBalance = sell * (1 - steamFee);
+        balancePercent = (netBalance / buy) * 100;
+        label = 'Steam balance';
       } else if (type === 'steamToFloat') {
         const floatFee = 0.02; // 2%
-        netSell = sell * (1 - floatFee);
+        netBalance = sell * (1 - floatFee);
+        balancePercent = (netBalance / buy) * 100;
+        label = 'Float balance';
       }
 
-      const profit = netSell - buy;
-      const profitPercent = (profit / buy) * 100;
+      let message = `${label}: ${currency}${netBalance.toFixed(2)} (${balancePercent.toFixed(2)}% of purchase)`;
 
-      let message = '';
-
-      if (profit > 0) {
-        message = `<span class="profit">Profit: ${currency}${profit.toFixed(2)} (${profitPercent.toFixed(2)}%) ✅</span>`;
-      } else if (profit < 0) {
-        message = `<span class="loss">Loss: ${currency}${profit.toFixed(2)} (${profitPercent.toFixed(2)}%) ❌</span>`;
-      } else {
-        message = `<span>Break-even: ${currency}0.00 (0%) ⚖️</span>`;
-      }
-
-      document.getElementById('result').innerHTML = message;
+      document.getElementById('result').innerHTML = `<span class="profit">${message}</span>`;
     }
   </script>
 </body>
