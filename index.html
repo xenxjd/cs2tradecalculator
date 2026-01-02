@@ -104,7 +104,6 @@
   <div class="result" id="result">Enter prices to calculate.</div>
 
   <script>
-    // Kursy walut względem PLN
     const exchangeRates = {
       'PLN': 1,
       'USD': 3.60,
@@ -135,7 +134,6 @@
         return;
       }
 
-      // Przelicz ceny na PLN
       const buyPLN = buy * exchangeRates[buyCurrency];
       const sellPLN = sell * exchangeRates[sellCurrency];
 
@@ -144,12 +142,12 @@
       let label = '';
 
       if (type === 'floatToSteam') {
-        const steamFee = 0.13; // 13%
+        const steamFee = 0.13;
         netBalance = sellPLN * (1 - steamFee);
         balancePercent = (netBalance / buyPLN) * 100;
         label = 'Steam balance';
       } else {
-        const floatFee = 0.02; // 2%
+        const floatFee = 0.02;
         netBalance = sellPLN * (1 - floatFee);
         balancePercent = (netBalance / buyPLN) * 100;
         label = 'Float balance';
@@ -163,3 +161,4 @@
   </script>
 </body>
 </html>
+
