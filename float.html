@@ -48,7 +48,7 @@
 </head>
 <body>
   <h1>CS2 Skin Balance Calculator</h1>
-  
+
   <label>Buy Price:</label>
   <input type="number" id="buyPrice" placeholder="e.g., 10" step="0.01">
 
@@ -64,19 +64,39 @@
   <label>Currency for Buy Price:</label>
   <select id="buyCurrency">
     <option value="PLN">PLN (zł)</option>
-    <option value="CNY">CNY (¥)</option>
     <option value="USD">USD ($)</option>
     <option value="EUR">EUR (€)</option>
     <option value="GBP">GBP (£)</option>
+    <option value="CHF">CHF (Fr)</option>
+    <option value="AUD">AUD (A$)</option>
+    <option value="CAD">CAD (C$)</option>
+    <option value="NOK">NOK (kr)</option>
+    <option value="SEK">SEK (kr)</option>
+    <option value="CNY">CNY (¥)</option>
+    <option value="CZK">CZK (Kč)</option>
+    <option value="DKK">DKK (kr)</option>
+    <option value="RON">RON (lei)</option>
+    <option value="HUF">HUF (Ft)</option>
+    <option value="JPY">JPY (¥)</option>
   </select>
 
   <label>Currency for Sell Price:</label>
   <select id="sellCurrency">
     <option value="PLN">PLN (zł)</option>
-    <option value="CNY">CNY (¥)</option>
     <option value="USD">USD ($)</option>
     <option value="EUR">EUR (€)</option>
     <option value="GBP">GBP (£)</option>
+    <option value="CHF">CHF (Fr)</option>
+    <option value="AUD">AUD (A$)</option>
+    <option value="CAD">CAD (C$)</option>
+    <option value="NOK">NOK (kr)</option>
+    <option value="SEK">SEK (kr)</option>
+    <option value="CNY">CNY (¥)</option>
+    <option value="CZK">CZK (Kč)</option>
+    <option value="DKK">DKK (kr)</option>
+    <option value="RON">RON (lei)</option>
+    <option value="HUF">HUF (Ft)</option>
+    <option value="JPY">JPY (¥)</option>
   </select>
 
   <label>Steam Balance Factor (% of value):</label>
@@ -84,45 +104,45 @@
 
   <button onclick="calculateBalance()">Check Balance</button>
 
-  <div class="result" id="result">Loading exchange rates...</div>
+  <div class="result" id="result">Enter prices to calculate.</div>
 
   <script>
-    let exchangeRates = {'PLN': 1}; // domyślnie PLN
-
-    // Pobieramy aktualne kursy walut z exchangerate.host
-    fetch('https://api.exchangerate.host/latest?base=PLN&symbols=USD,EUR,GBP,CNY')
-      .then(res => res.json())
-      .then(data => {
-        exchangeRates = {
-          'PLN': 1,
-          'USD': data.rates.USD,
-          'EUR': data.rates.EUR,
-          'GBP': data.rates.GBP,
-          'CNY': data.rates.CNY
-        };
-        document.getElementById('result').innerHTML = 'Exchange rates loaded. Enter prices to calculate.';
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('result').innerHTML = 'Failed to load exchange rates. Using default values.';
-      });
+    // Aktualne kursy walut względem PLN
+    const exchangeRates = {
+      'PLN': 1,
+      'USD': 3.60,
+      'EUR': 4.23,
+      'GBP': 4.84,
+      'CHF': 4.54,
+      'AUD': 2.41,
+      'CAD': 2.63,
+      'NOK': 0.358,
+      'SEK': 0.391,
+      'CNY': 0.515,
+      'CZK': 0.175,
+      'DKK': 0.566,
+      'RON': 0.829,
+      'HUF': 0.01097,
+      'JPY': 0.02299
+    };
 
     function calculateBalance() {
       const buy = parseFloat(document.getElementById('buyPrice').value);
       const sell = parseFloat(document.getElementById('sellPrice').value);
       const type = document.getElementById('transactionType').value;
-      const steamFactor = parseFloat(document.getElementById('steamFactor').value) / 100;
+      let steamFactor = parseFloat(document.getElementById('steamFactor').value) / 100;
       const buyCurrency = document.getElementById('buyCurrency').value;
       const sellCurrency = document.getElementById('sellCurrency').value;
 
-      if (isNaN(buy) || isNaN(sell) || isNaN(steamFactor)) {
-        document.getElementById('result').innerHTML = `<span class="loss">Please enter valid numbers.</span>`;
+      if (isNaN(buy) || isNaN(sell) || isNaN(steamFactor) || steamFactor <= 0) {
+        document.getElementById('result').innerHTML = `<span class="loss">Please enter valid numbers greater than 0.</span>`;
         return;
       }
+      if (steamFactor > 1) steamFactor = 1;
 
-      // Przelicz ceny na PLN według aktualnych kursów
-      const buyBase = buy / exchangeRates[buyCurrency];   // 1 PLN = x waluty
-      const sellBase = sell / exchangeRates[sellCurrency];
+      // Przelicz ceny na PLN
+      const buyPLN = buy * exchangeRates[buyCurrency];
+      const sellPLN = sell * exchangeRates[sellCurrency];
 
       let netBalance = 0;
       let balancePercent = 0;
@@ -130,18 +150,18 @@
 
       if (type === 'floatToSteam') {
         const steamFee = 0.13; // 13%
-        netBalance = sellBase * (1 - steamFee);
-        balancePercent = (netBalance / (buyBase * steamFactor)) * 100;
+        netBalance = sellPLN * (1 - steamFee);
+        balancePercent = (netBalance / (buyPLN * steamFactor)) * 100;
         label = 'Steam balance';
-      } else if (type === 'steamToFloat') {
+      } else {
         const floatFee = 0.02; // 2%
-        netBalance = sellBase * (1 - floatFee);
-        balancePercent = (netBalance / (buyBase * steamFactor)) * 100;
+        netBalance = sellPLN * (1 - floatFee);
+        balancePercent = (netBalance / (buyPLN * steamFactor)) * 100;
         label = 'Float balance';
       }
 
-      let className = balancePercent >= 88 ? 'profit' : 'loss';
-      let message = `${label}: ${netBalance.toFixed(2)} PLN (≈${balancePercent.toFixed(2)}% of real cost)`;
+      const className = balancePercent >= 88 ? 'profit' : 'loss';
+      const message = `${label}: ${netBalance.toFixed(2)} PLN (≈${balancePercent.toFixed(2)}% of real cost)`;
 
       document.getElementById('result').innerHTML = `<span class="${className}">${message}</span>`;
     }
