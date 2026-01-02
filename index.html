@@ -99,15 +99,12 @@
     <option value="JPY">JPY (¥)</option>
   </select>
 
-  <label>Steam Balance Factor (% of value):</label>
-  <input type="number" id="steamFactor" value="100" min="0" max="100" step="1">
-
   <button onclick="calculateBalance()">Check Balance</button>
 
   <div class="result" id="result">Enter prices to calculate.</div>
 
   <script>
-    // Aktualne kursy walut względem PLN
+    // Kursy walut względem PLN
     const exchangeRates = {
       'PLN': 1,
       'USD': 3.60,
@@ -130,15 +127,13 @@
       const buy = parseFloat(document.getElementById('buyPrice').value);
       const sell = parseFloat(document.getElementById('sellPrice').value);
       const type = document.getElementById('transactionType').value;
-      let steamFactor = parseFloat(document.getElementById('steamFactor').value) / 100;
       const buyCurrency = document.getElementById('buyCurrency').value;
       const sellCurrency = document.getElementById('sellCurrency').value;
 
-      if (isNaN(buy) || isNaN(sell) || isNaN(steamFactor) || steamFactor <= 0) {
+      if (isNaN(buy) || isNaN(sell) || buy <= 0 || sell <= 0) {
         document.getElementById('result').innerHTML = `<span class="loss">Please enter valid numbers greater than 0.</span>`;
         return;
       }
-      if (steamFactor > 1) steamFactor = 1;
 
       // Przelicz ceny na PLN
       const buyPLN = buy * exchangeRates[buyCurrency];
@@ -151,21 +146,20 @@
       if (type === 'floatToSteam') {
         const steamFee = 0.13; // 13%
         netBalance = sellPLN * (1 - steamFee);
-        balancePercent = (netBalance / (buyPLN * steamFactor)) * 100;
+        balancePercent = (netBalance / buyPLN) * 100;
         label = 'Steam balance';
       } else {
         const floatFee = 0.02; // 2%
         netBalance = sellPLN * (1 - floatFee);
-        balancePercent = (netBalance / (buyPLN * steamFactor)) * 100;
+        balancePercent = (netBalance / buyPLN) * 100;
         label = 'Float balance';
       }
 
-      const className = balancePercent >= 88 ? 'profit' : 'loss';
-      const message = `${label}: ${netBalance.toFixed(2)} PLN (≈${balancePercent.toFixed(2)}% of real cost)`;
+      const className = balancePercent >= 100 ? 'profit' : 'loss';
+      const message = `${label}: ${netBalance.toFixed(2)} PLN (≈${balancePercent.toFixed(2)}% kosztu zakupu)`;
 
       document.getElementById('result').innerHTML = `<span class="${className}">${message}</span>`;
     }
   </script>
 </body>
 </html>
-
