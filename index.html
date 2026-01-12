@@ -14,9 +14,7 @@
       align-items: center;
       padding: 50px 20px;
     }
-    h1 {
-      color: #00ff99;
-    }
+    h1 { color: #00ff99; }
     input, select {
       padding: 10px;
       margin: 5px 0;
@@ -39,12 +37,9 @@
       font-size: 1.2em;
       text-align: center;
     }
-    .profit {
-      color: #00ff99;
-    }
-    .loss {
-      color: #ff4c4c;
-    }
+    .profit { color: #00ff99; }
+    .loss { color: #ff4c4c; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -52,53 +47,36 @@
 <h1>CS2 Skin Balance Calculator</h1>
 
 <label>Buy Price:</label>
-<input type="number" id="buyPrice" placeholder="e.g., 100" step="0.01">
+<input type="number" id="buyPrice" step="0.01">
 
 <label>Sell Price:</label>
-<input type="number" id="sellPrice" placeholder="e.g., 130" step="0.01">
+<input type="number" id="sellPrice" step="0.01">
 
 <label>Transaction Type:</label>
-<select id="transactionType">
+<select id="transactionType" onchange="toggleSteamFactor()">
   <option value="floatToSteam">Buy on Float → Sell on Steam</option>
   <option value="steamToFloat">Buy on Steam → Sell on Float</option>
 </select>
 
+<div id="steamFactorBox" class="hidden">
+  <label>Steam Balance Cost (%):</label>
+  <input type="number" id="steamFactor" value="70" min="60" max="80" step="1">
+</div>
+
 <label>Currency for Buy Price:</label>
 <select id="buyCurrency">
-  <option value="PLN">PLN (zł)</option>
-  <option value="USD">USD ($)</option>
-  <option value="EUR">EUR (€)</option>
-  <option value="GBP">GBP (£)</option>
-  <option value="CHF">CHF (Fr)</option>
-  <option value="AUD">AUD (A$)</option>
-  <option value="CAD">CAD (C$)</option>
-  <option value="NOK">NOK (kr)</option>
-  <option value="SEK">SEK (kr)</option>
-  <option value="CNY">CNY (¥)</option>
-  <option value="CZK">CZK (Kč)</option>
-  <option value="DKK">DKK (kr)</option>
-  <option value="RON">RON (lei)</option>
-  <option value="HUF">HUF (Ft)</option>
-  <option value="JPY">JPY (¥)</option>
+  <option value="PLN">PLN</option>
+  <option value="USD">USD</option>
+  <option value="EUR">EUR</option>
+  <option value="CNY">CNY</option>
 </select>
 
 <label>Currency for Sell Price:</label>
 <select id="sellCurrency">
-  <option value="PLN">PLN (zł)</option>
-  <option value="USD">USD ($)</option>
-  <option value="EUR">EUR (€)</option>
-  <option value="GBP">GBP (£)</option>
-  <option value="CHF">CHF (Fr)</option>
-  <option value="AUD">AUD (A$)</option>
-  <option value="CAD">CAD (C$)</option>
-  <option value="NOK">NOK (kr)</option>
-  <option value="SEK">SEK (kr)</option>
-  <option value="CNY">CNY (¥)</option>
-  <option value="CZK">CZK (Kč)</option>
-  <option value="DKK">DKK (kr)</option>
-  <option value="RON">RON (lei)</option>
-  <option value="HUF">HUF (Ft)</option>
-  <option value="JPY">JPY (¥)</option>
+  <option value="PLN">PLN</option>
+  <option value="USD">USD</option>
+  <option value="EUR">EUR</option>
+  <option value="CNY">CNY</option>
 </select>
 
 <button onclick="calculateBalance()">Check Balance</button>
@@ -106,70 +84,61 @@
 <div class="result" id="result">Enter prices to calculate.</div>
 
 <script>
-  const exchangeRates = {
-    'PLN': 1,
-    'USD': 3.60,
-    'EUR': 4.23,
-    'GBP': 4.84,
-    'CHF': 4.54,
-    'AUD': 2.41,
-    'CAD': 2.63,
-    'NOK': 0.358,
-    'SEK': 0.391,
-    'CNY': 0.52,
-    'CZK': 0.175,
-    'DKK': 0.566,
-    'RON': 0.829,
-    'HUF': 0.01097,
-    'JPY': 0.02299
-  };
+const exchangeRates = {
+  PLN: 1,
+  USD: 3.60,
+  EUR: 4.23,
+  CNY: 0.52
+};
 
-  const STEAM_BALANCE_VALUE = 0.7;
-  const STEAM_FEE = 0.13;
-  const FLOAT_FEE = 0.02;
+const STEAM_FEE = 0.13;
+const FLOAT_FEE = 0.02;
 
-  function calculateBalance() {
-    const buy = parseFloat(document.getElementById('buyPrice').value);
-    const sell = parseFloat(document.getElementById('sellPrice').value);
-    const type = document.getElementById('transactionType').value;
-    const buyCurrency = document.getElementById('buyCurrency').value;
-    const sellCurrency = document.getElementById('sellCurrency').value;
+function toggleSteamFactor() {
+  steamFactorBox.classList.toggle(
+    'hidden',
+    transactionType.value !== 'steamToFloat'
+  );
+}
 
-    if (isNaN(buy) || isNaN(sell) || buy <= 0 || sell <= 0) {
-      document.getElementById('result').innerHTML =
-        `<span class="loss">Please enter valid numbers greater than 0.</span>`;
-      return;
-    }
+function calculateBalance() {
+  const buy = parseFloat(buyPrice.value);
+  const sell = parseFloat(sellPrice.value);
+  const type = transactionType.value;
 
-    const buyPLN = buy * exchangeRates[buyCurrency];
-    const sellPLN = sell * exchangeRates[sellCurrency];
+  if (!buy || !sell) {
+    result.innerHTML = `<span class="loss">Invalid input</span>`;
+    return;
+  }
 
-    let realCost, netValue, profit, percent, label;
+  const buyPLN = buy * exchangeRates[buyCurrency.value];
+  const sellPLN = sell * exchangeRates[sellCurrency.value];
 
-    if (type === 'steamToFloat') {
-      realCost = buyPLN * STEAM_BALANCE_VALUE;
-      netValue = sellPLN * (1 - FLOAT_FEE);
-      label = 'Steam → Float';
-    } else {
-      realCost = buyPLN;
-      netValue = sellPLN * (1 - STEAM_FEE);
-      label = 'Float → Steam';
-    }
+  if (type === 'floatToSteam') {
+    // 🔥 POZYSKANIE STEAM BALANCE
+    const steamBalance = sellPLN * (1 - STEAM_FEE);
+    const percent = (buyPLN / steamBalance) * 100;
 
-    profit = netValue - realCost;
-    percent = (profit / realCost) * 100;
+    result.innerHTML = `
+      <span class="profit">
+        You obtained Steam balance for ${percent.toFixed(0)}% of its value
+      </span>
+    `;
+  } else {
+    // 🔥 STEAM → FLOAT (PROFIT)
+    const factor = parseFloat(steamFactor.value) / 100;
+    const realCost = buyPLN * factor;
+    const netSell = sellPLN * (1 - FLOAT_FEE);
+    const profit = netSell - realCost;
+    const percent = (profit / realCost) * 100;
 
-    const className = profit >= 0 ? 'profit' : 'loss';
-
-    document.getElementById('result').innerHTML = `
-      <span class="${className}">
-        ${label}<br>
-        Real cost: ${realCost.toFixed(2)} PLN<br>
-        Net received: ${netValue.toFixed(2)} PLN<br>
-        Result: ${profit.toFixed(2)} PLN (${percent.toFixed(2)}%)
+    result.innerHTML = `
+      <span class="${profit >= 0 ? 'profit' : 'loss'}">
+        Profit: ${profit.toFixed(2)} PLN (${percent.toFixed(2)}%)
       </span>
     `;
   }
+}
 </script>
 
 </body>
