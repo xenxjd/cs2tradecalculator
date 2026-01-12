@@ -37,6 +37,7 @@
     .result {
       margin-top: 20px;
       font-size: 1.2em;
+      text-align: center;
     }
     .profit {
       color: #00ff99;
@@ -47,118 +48,129 @@
   </style>
 </head>
 <body>
-  <h1>CS2 Skin Balance Calculator</h1>
 
-  <label>Buy Price:</label>
-  <input type="number" id="buyPrice" placeholder="e.g., 100" step="0.01">
+<h1>CS2 Skin Balance Calculator</h1>
 
-  <label>Sell Price:</label>
-  <input type="number" id="sellPrice" placeholder="e.g., 130" step="0.01">
+<label>Buy Price:</label>
+<input type="number" id="buyPrice" placeholder="e.g., 100" step="0.01">
 
-  <label>Transaction Type:</label>
-  <select id="transactionType">
-    <option value="floatToSteam">Buy on Float → Sell on Steam</option>
-    <option value="steamToFloat">Buy on Steam → Sell on Float</option>
-  </select>
+<label>Sell Price:</label>
+<input type="number" id="sellPrice" placeholder="e.g., 130" step="0.01">
 
-  <label>Currency for Buy Price:</label>
-  <select id="buyCurrency">
-    <option value="PLN">PLN (zł)</option>
-    <option value="USD">USD ($)</option>
-    <option value="EUR">EUR (€)</option>
-    <option value="GBP">GBP (£)</option>
-    <option value="CHF">CHF (Fr)</option>
-    <option value="AUD">AUD (A$)</option>
-    <option value="CAD">CAD (C$)</option>
-    <option value="NOK">NOK (kr)</option>
-    <option value="SEK">SEK (kr)</option>
-    <option value="CNY">CNY (¥)</option>
-    <option value="CZK">CZK (Kč)</option>
-    <option value="DKK">DKK (kr)</option>
-    <option value="RON">RON (lei)</option>
-    <option value="HUF">HUF (Ft)</option>
-    <option value="JPY">JPY (¥)</option>
-  </select>
+<label>Transaction Type:</label>
+<select id="transactionType">
+  <option value="floatToSteam">Buy on Float → Sell on Steam</option>
+  <option value="steamToFloat">Buy on Steam → Sell on Float</option>
+</select>
 
-  <label>Currency for Sell Price:</label>
-  <select id="sellCurrency">
-    <option value="PLN">PLN (zł)</option>
-    <option value="USD">USD ($)</option>
-    <option value="EUR">EUR (€)</option>
-    <option value="GBP">GBP (£)</option>
-    <option value="CHF">CHF (Fr)</option>
-    <option value="AUD">AUD (A$)</option>
-    <option value="CAD">CAD (C$)</option>
-    <option value="NOK">NOK (kr)</option>
-    <option value="SEK">SEK (kr)</option>
-    <option value="CNY">CNY (¥)</option>
-    <option value="CZK">CZK (Kč)</option>
-    <option value="DKK">DKK (kr)</option>
-    <option value="RON">RON (lei)</option>
-    <option value="HUF">HUF (Ft)</option>
-    <option value="JPY">JPY (¥)</option>
-  </select>
+<label>Currency for Buy Price:</label>
+<select id="buyCurrency">
+  <option value="PLN">PLN (zł)</option>
+  <option value="USD">USD ($)</option>
+  <option value="EUR">EUR (€)</option>
+  <option value="GBP">GBP (£)</option>
+  <option value="CHF">CHF (Fr)</option>
+  <option value="AUD">AUD (A$)</option>
+  <option value="CAD">CAD (C$)</option>
+  <option value="NOK">NOK (kr)</option>
+  <option value="SEK">SEK (kr)</option>
+  <option value="CNY">CNY (¥)</option>
+  <option value="CZK">CZK (Kč)</option>
+  <option value="DKK">DKK (kr)</option>
+  <option value="RON">RON (lei)</option>
+  <option value="HUF">HUF (Ft)</option>
+  <option value="JPY">JPY (¥)</option>
+</select>
 
-  <button onclick="calculateBalance()">Check Balance</button>
+<label>Currency for Sell Price:</label>
+<select id="sellCurrency">
+  <option value="PLN">PLN (zł)</option>
+  <option value="USD">USD ($)</option>
+  <option value="EUR">EUR (€)</option>
+  <option value="GBP">GBP (£)</option>
+  <option value="CHF">CHF (Fr)</option>
+  <option value="AUD">AUD (A$)</option>
+  <option value="CAD">CAD (C$)</option>
+  <option value="NOK">NOK (kr)</option>
+  <option value="SEK">SEK (kr)</option>
+  <option value="CNY">CNY (¥)</option>
+  <option value="CZK">CZK (Kč)</option>
+  <option value="DKK">DKK (kr)</option>
+  <option value="RON">RON (lei)</option>
+  <option value="HUF">HUF (Ft)</option>
+  <option value="JPY">JPY (¥)</option>
+</select>
 
-  <div class="result" id="result">Enter prices to calculate.</div>
+<button onclick="calculateBalance()">Check Balance</button>
 
-  <script>
-    const exchangeRates = {
-      'PLN': 1,
-      'USD': 3.60,
-      'EUR': 4.23,
-      'GBP': 4.84,
-      'CHF': 4.54,
-      'AUD': 2.41,
-      'CAD': 2.63,
-      'NOK': 0.358,
-      'SEK': 0.391,
-      'CNY': 0.52,
-      'CZK': 0.175,
-      'DKK': 0.566,
-      'RON': 0.829,
-      'HUF': 0.01097,
-      'JPY': 0.02299
-    };
+<div class="result" id="result">Enter prices to calculate.</div>
 
-    function calculateBalance() {
-      const buy = parseFloat(document.getElementById('buyPrice').value);
-      const sell = parseFloat(document.getElementById('sellPrice').value);
-      const type = document.getElementById('transactionType').value;
-      const buyCurrency = document.getElementById('buyCurrency').value;
-      const sellCurrency = document.getElementById('sellCurrency').value;
+<script>
+  const exchangeRates = {
+    'PLN': 1,
+    'USD': 3.60,
+    'EUR': 4.23,
+    'GBP': 4.84,
+    'CHF': 4.54,
+    'AUD': 2.41,
+    'CAD': 2.63,
+    'NOK': 0.358,
+    'SEK': 0.391,
+    'CNY': 0.52,
+    'CZK': 0.175,
+    'DKK': 0.566,
+    'RON': 0.829,
+    'HUF': 0.01097,
+    'JPY': 0.02299
+  };
 
-      if (isNaN(buy) || isNaN(sell) || buy <= 0 || sell <= 0) {
-        document.getElementById('result').innerHTML = `<span class="loss">Please enter valid numbers greater than 0.</span>`;
-        return;
-      }
+  const STEAM_BALANCE_VALUE = 0.7;
+  const STEAM_FEE = 0.13;
+  const FLOAT_FEE = 0.02;
 
-      const buyPLN = buy * exchangeRates[buyCurrency];
-      const sellPLN = sell * exchangeRates[sellCurrency];
+  function calculateBalance() {
+    const buy = parseFloat(document.getElementById('buyPrice').value);
+    const sell = parseFloat(document.getElementById('sellPrice').value);
+    const type = document.getElementById('transactionType').value;
+    const buyCurrency = document.getElementById('buyCurrency').value;
+    const sellCurrency = document.getElementById('sellCurrency').value;
 
-      let netBalance = 0;
-      let percentOfValue = 0;
-      let label = '';
-
-      if (type === 'floatToSteam') {
-        const steamFee = 0.13; // 13% fee
-        netBalance = sellPLN * (1 - steamFee);
-        label = 'Steam balance';
-      } else {
-        const floatFee = 0.02; // 2% fee
-        netBalance = sellPLN * (1 - floatFee);
-        label = 'Float balance';
-      }
-
-      // procent w interpretacji "ile procent netto stanowi Twój zakup"
-      percentOfValue = (buyPLN / netBalance) * 100;
-
-      const message = `${label}: Your purchase is ≈${percentOfValue.toFixed(0)}% of the net value (${netBalance.toFixed(2)} PLN)`;
-
-      document.getElementById('result').innerHTML = `<span class="profit">${message}</span>`;
+    if (isNaN(buy) || isNaN(sell) || buy <= 0 || sell <= 0) {
+      document.getElementById('result').innerHTML =
+        `<span class="loss">Please enter valid numbers greater than 0.</span>`;
+      return;
     }
-  </script>
+
+    const buyPLN = buy * exchangeRates[buyCurrency];
+    const sellPLN = sell * exchangeRates[sellCurrency];
+
+    let realCost, netValue, profit, percent, label;
+
+    if (type === 'steamToFloat') {
+      realCost = buyPLN * STEAM_BALANCE_VALUE;
+      netValue = sellPLN * (1 - FLOAT_FEE);
+      label = 'Steam → Float';
+    } else {
+      realCost = buyPLN;
+      netValue = sellPLN * (1 - STEAM_FEE);
+      label = 'Float → Steam';
+    }
+
+    profit = netValue - realCost;
+    percent = (profit / realCost) * 100;
+
+    const className = profit >= 0 ? 'profit' : 'loss';
+
+    document.getElementById('result').innerHTML = `
+      <span class="${className}">
+        ${label}<br>
+        Real cost: ${realCost.toFixed(2)} PLN<br>
+        Net received: ${netValue.toFixed(2)} PLN<br>
+        Result: ${profit.toFixed(2)} PLN (${percent.toFixed(2)}%)
+      </span>
+    `;
+  }
+</script>
+
 </body>
 </html>
-
